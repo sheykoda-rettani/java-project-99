@@ -5,6 +5,9 @@ plugins {
     id("jacoco")
     id("checkstyle")
     id("com.github.ben-manes.versions") version "0.53.0"
+    id("org.sonarqube") version "7.2.3.7755"
+
+    id("io.freefair.lombok") version "9.2.0"
 }
 
 group = "hexlet.code"
@@ -23,6 +26,7 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.security:spring-security-config:7.0.4")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
@@ -31,6 +35,11 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-h2console")
+    implementation("com.h2database:h2:2.3.232")
+    runtimeOnly("org.postgresql:postgresql:42.7.9")
 }
 
 tasks.jacocoTestReport {
