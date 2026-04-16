@@ -1,18 +1,9 @@
-FROM gradle:9.4.1-jdk21 AS builder
-
-ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
-
-COPY gradle gradle
-COPY build.gradle.kts build.gradle.kts
-COPY settings.gradle.kts settings.gradle.kts
-COPY src src
-
-RUN gradle clean assemble --no-daemon
+FROM gradle:9.4.1-jdk21 AS build
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN ./gradlew bootJar --no-daemon
 
 FROM eclipse-temurin:21-jre
-
-COPY --from=builder /app/build/libs/*.jar app.jar
-
-ENV SPRING_PROFILES_ACTIVE=prod
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+EXPOSE 8080
+COPY --from=build /home/gradle/src/build/libs/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
