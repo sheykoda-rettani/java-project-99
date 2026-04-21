@@ -26,7 +26,6 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.security:spring-security-config:7.0.4")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
@@ -40,6 +39,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-h2console")
     implementation("com.h2database:h2:2.3.232")
     runtimeOnly("org.postgresql:postgresql:42.7.9")
+
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.security:spring-security-crypto:7.0.4")
 }
 
 tasks.jacocoTestReport {
