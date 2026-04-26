@@ -4,6 +4,7 @@ import hexlet.code.app.dto.UserRequestDto;
 import hexlet.code.app.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -17,11 +18,20 @@ public final class DataInitializer implements ApplicationRunner {
      */
     private final UserService userService;
 
+    /**
+     * Имя/email администратора.
+     */
+    @Value("${admin.email:hexlet@example.com}")
+    private String adminEmail;
+
+    /**
+     * Пароль администратора.
+     */
+    @Value("${admin.password:qwerty}")
+    private String adminPassword;
+
     @Override
     public void run(final ApplicationArguments args) {
-        final String adminEmail = "hexlet@example.com";
-        final String adminPassword = "qwerty";
-
         if (userService.findByEmail(adminEmail).isEmpty()) {
             UserRequestDto adminDto = new UserRequestDto();
             adminDto.setEmail(adminEmail);
