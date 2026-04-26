@@ -5,7 +5,7 @@ import hexlet.code.app.dto.UserRequestDto;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -30,6 +30,11 @@ public final class UserService {
      * Для валидации частичных данных.
      */
     private final Validator validator;
+
+    /**
+     * Кодирование пароля.
+     */
+    private final PasswordEncoder passwordEncoder;
 
     public User create(final UserRequestDto userDto) {
         User user = userConverter.fromDto(userDto);
@@ -82,7 +87,6 @@ public final class UserService {
         if (password == null || password.isBlank()) {
             throw new RuntimeException("пароль не может быть пустым");
         }
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.encode(password);
+        return passwordEncoder.encode(password);
     }
 }

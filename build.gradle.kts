@@ -41,7 +41,10 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql:42.7.9")
 
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.security:spring-security-crypto:7.0.4")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+
+    testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.jacocoTestReport {

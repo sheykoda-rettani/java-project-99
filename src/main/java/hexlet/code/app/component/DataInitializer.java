@@ -1,4 +1,4 @@
-package hexlet.code.app.init;
+package hexlet.code.app.component;
 
 import hexlet.code.app.dto.UserRequestDto;
 import hexlet.code.app.service.UserService;
@@ -19,8 +19,8 @@ public final class DataInitializer implements ApplicationRunner {
 
     @Override
     public void run(final ApplicationArguments args) {
-        String adminEmail = "hexlet@example.com";
-        String adminPassword = "qwerty";
+        final String adminEmail = "hexlet@example.com";
+        final String adminPassword = "qwerty";
 
         if (userService.findByEmail(adminEmail).isEmpty()) {
             UserRequestDto adminDto = new UserRequestDto();

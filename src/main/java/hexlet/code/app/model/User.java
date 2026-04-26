@@ -15,15 +15,19 @@ import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
 @EqualsAndHashCode
-public final class User {
+public final class User implements UserDetails {
     /**
      * ID поле.
      */
@@ -86,5 +90,41 @@ public final class User {
     @PreUpdate
     private void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    @JsonIgnore
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
     }
 }
