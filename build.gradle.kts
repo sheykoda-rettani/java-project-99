@@ -45,6 +45,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
     testImplementation("org.springframework.security:spring-security-test")
+    implementation("jakarta.ws.rs:jakarta.ws.rs-api:4.0.0")
+    implementation("org.glassfish.jersey.core:jersey-common")
 }
 
 tasks.jacocoTestReport {

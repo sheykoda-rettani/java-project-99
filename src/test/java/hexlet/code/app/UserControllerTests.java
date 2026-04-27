@@ -70,8 +70,7 @@ final class UserControllerTests {
     @SuppressWarnings("checkstyle:indentation")
     @BeforeEach
     @SqlGroup({
-            @Sql(scripts = "/sql/cleanup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-            @Sql(scripts = "/sql/init-admin.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            @Sql(scripts = "/sql/init-users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     })
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultResponseCharacterEncoding(StandardCharsets.UTF_8).

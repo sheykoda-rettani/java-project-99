@@ -1,14 +1,12 @@
 package hexlet.code.app.controller;
 
-import hexlet.code.app.dto.UserRequestDto;
-import hexlet.code.app.model.User;
-import hexlet.code.app.service.UserService;
+import hexlet.code.app.model.TaskStatus;
+import hexlet.code.app.service.TaskStatusService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,23 +19,23 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/task_statuses")
 @RequiredArgsConstructor
-public final class UserController {
+public final class TaskStatusController {
     /**
-     * Сервис операций с пользователями.
+     * Сервис статусов.
      */
-    private final UserService userService;
+    private final TaskStatusService taskStatusService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<User>> getAllUsers() {
-        var users = userService.findAll();
-        return ResponseEntity.ok().header("X-Total-Count", String.valueOf(users.size())).body(users);
+    public ResponseEntity<List<TaskStatus>> getAllStatuses() {
+        var statuses = taskStatusService.findAll();
+        return ResponseEntity.ok().header("X-Total-Count", String.valueOf(statuses.size())).body(statuses);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User getUserById(@PathVariable final Long id) {
-        return userService.findById(id);
+    public TaskStatus getStatusById(@PathVariable final Long id) {
+        return taskStatusService.findById(id);
     }
 
     @PostMapping(
@@ -45,8 +43,8 @@ public final class UserController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody @Valid final UserRequestDto user) {
-        return userService.create(user);
+    public TaskStatus createStatus(@Valid @RequestBody final TaskStatus taskStatus) {
+        return taskStatusService.create(taskStatus);
     }
 
     @PutMapping(
@@ -54,12 +52,9 @@ public final class UserController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public User updateUser(@PathVariable final Long id, @RequestBody final UserRequestDto userDetails) {
-        return userService.update(id, userDetails);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable final Long id) {
-        userService.deleteById(id);
+    public TaskStatus updateStatus(
+            @PathVariable final Long id,
+            @RequestBody final TaskStatus taskStatusDetails) {
+        return taskStatusService.update(id, taskStatusDetails);
     }
 }

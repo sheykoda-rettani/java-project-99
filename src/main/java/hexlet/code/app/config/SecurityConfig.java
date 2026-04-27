@@ -50,9 +50,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(final HttpSecurity http) {
         return http.csrf(AbstractHttpConfigurer::disable).
                 authorizeHttpRequests(auth -> auth.
-                        requestMatchers("/api/login").permitAll().
                         requestMatchers("/").permitAll().
+                        requestMatchers("/index.html").permitAll().
+                        requestMatchers("/assets/**").permitAll().
                         requestMatchers("/h2-console/**").permitAll().
+                        requestMatchers("/api/login").permitAll().
                         requestMatchers("/api/**").authenticated()).
                 sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).

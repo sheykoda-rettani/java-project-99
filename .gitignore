@@ -36,3 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 /src/main/resources/certs/private.pem
+
+node_modules
+/src/main/resources/static/**
+/package.json
+/package-lock.json
