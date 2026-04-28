@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +36,7 @@ public final class TaskStatusController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public TaskStatus getStatusById(@PathVariable final Long id) {
-        return taskStatusService.findById(id);
+        return taskStatusService.findByIdOrThrow(id);
     }
 
     @PostMapping(
@@ -56,5 +57,10 @@ public final class TaskStatusController {
             @PathVariable final Long id,
             @RequestBody final TaskStatus taskStatusDetails) {
         return taskStatusService.update(id, taskStatusDetails);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteStatus(@PathVariable final Long id) {
+        taskStatusService.deleteStatus(id);
     }
 }

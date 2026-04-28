@@ -47,6 +47,9 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     implementation("jakarta.ws.rs:jakarta.ws.rs-api:4.0.0")
     implementation("org.glassfish.jersey.core:jersey-common")
+
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 }
 
 tasks.jacocoTestReport {

@@ -37,7 +37,7 @@ public final class UserController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public User getUserById(@PathVariable final Long id) {
-        return userService.findById(id);
+        return userService.findByIdOrThrow(id);
     }
 
     @PostMapping(

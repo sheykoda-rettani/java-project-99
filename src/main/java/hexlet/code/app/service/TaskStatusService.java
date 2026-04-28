@@ -5,6 +5,7 @@ import hexlet.code.app.repository.TaskStatusRepository;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.Named;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -29,7 +30,7 @@ public final class TaskStatusService {
         return taskStatusRepository.findAll();
     }
 
-    public TaskStatus findById(final Long id) {
+    public TaskStatus findByIdOrThrow(final Long id) {
         return taskStatusRepository.findById(id).
                 orElseThrow(() -> new NotFoundException("Статус c id %d не найден".formatted(id)));
     }
@@ -42,7 +43,7 @@ public final class TaskStatusService {
     }
 
     public TaskStatus update(final Long id, final TaskStatus details) {
-        TaskStatus status = findById(id);
+        TaskStatus status = findByIdOrThrow(id);
 
         if (details.getName() != null) {
             status.setName(details.getName());
@@ -56,5 +57,23 @@ public final class TaskStatusService {
         Errors errors = new BeanPropertyBindingResult(status, "status");
         validator.validate(status, errors);
         return taskStatusRepository.save(status);
+    }
+
+    public TaskStatus findBySlugOrThrow(final String slug) {
+        return taskStatusRepository.findBySlug(slug).orElseThrow(() ->
+                new NotFoundException("Статус со слагом '%s' не найден".formatted(slug)));
+    }
+
+    @Named("statusMapping")
+    public TaskStatus findBySlugOrNull(final String slug) {
+        if (slug == null || slug.isBlank()) {
+            return null;
+        }
+        return taskStatusRepository.findBySlug(slug).orElse(null);
+    }
+
+    public void deleteStatus(final Long id) {
+        TaskStatus status = findByIdOrThrow(id);
+        taskStatusRepository.delete(status);
     }
 }

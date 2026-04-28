@@ -1,10 +1,11 @@
 package hexlet.code.app.service;
 
-import hexlet.code.app.converter.UserConverter;
+import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.dto.UserRequestDto;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.Named;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -25,7 +26,7 @@ public final class UserService {
     /**
      * Преобразование в ДТО и обратно.
      */
-    private final UserConverter userConverter;
+    private final UserMapper userMapper;
     /**
      * Для валидации частичных данных.
      */
@@ -37,14 +38,14 @@ public final class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User create(final UserRequestDto userDto) {
-        User user = userConverter.fromDto(userDto);
+        User user = userMapper.fromUserDto(userDto);
         user.setPassword(encodePassword(user.getPassword()));
         return userRepository.save(user);
     }
 
     public User update(final Long id, final UserRequestDto userDto) {
-        User user = findById(id);
-        User userDetails = userConverter.fromDto(userDto);
+        User user = findByIdOrThrow(id);
+        User userDetails = userMapper.fromUserDto(userDto);
 
         if (userDetails.getFirstName() != null) {
             user.setFirstName(userDetails.getFirstName());
@@ -70,13 +71,25 @@ public final class UserService {
     }
 
     public void deleteById(final Long id) {
-        findById(id);
+        findByIdOrThrow(id);
         userRepository.deleteById(id);
     }
 
-    public User findById(final Long id) {
+    public User findByIdOrThrow(final Long id) {
         return userRepository.findById(id).
                 orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+    }
+
+    @Named("userMapping")
+    public User findByIdOrNull(final Long id) {
+        if (id == null) {
+            return null;
+        }
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User findByIdOrNull(final long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     public Optional<User> findByEmail(final String email) {
