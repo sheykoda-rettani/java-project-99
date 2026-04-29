@@ -5,14 +5,13 @@ import hexlet.code.app.dto.TaskDto;
 import hexlet.code.app.model.Task;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.UserRepository;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+import jakarta.validation.Validator;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +44,7 @@ public final class TaskService {
 
     private Task findByIdOrThrow(final Long id) {
         return taskRepository.findById(id).
-                orElseThrow(() -> new NoSuchElementException("задача с id %d не найдена".formatted(id)));
+                orElseThrow(() -> new NotFoundException("Задача с id %d не найдена".formatted(id)));
     }
 
     public TaskDto findById(final Long id) {
@@ -54,7 +53,7 @@ public final class TaskService {
     }
 
     public TaskDto create(final TaskDto taskDto) {
-        Task task = taskMapper.toTaskEntity(taskDto);
+        Task task = taskMapper.toNewTaskEntity(taskDto);
         taskRepository.save(task);
         taskDto.setId(task.getId());
         return taskDto;
@@ -64,8 +63,12 @@ public final class TaskService {
         Task task = findByIdOrThrow(id);
         taskMapper.updateFromDto(taskDto, task);
         TaskDto toValidate = taskMapper.toTaskDto(task);
-        Errors errors = new BeanPropertyBindingResult(toValidate, "task");
-        validator.validate(toValidate, errors);
+
+        var violations = validator.validate(toValidate);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException("Ошибка валидации данных запроса", violations);
+        }
+
         taskRepository.save(task);
         return taskMapper.toTaskDto(task);
     }

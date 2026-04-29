@@ -1,5 +1,6 @@
 package hexlet.code.app;
 
+import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,10 @@ public abstract class AbstractWebIntegrationTest {
      */
     @Autowired
     protected UserRepository userRepository;
+    /**
+     * Пользователь для тестов.
+     */
+    protected User testUser;
 
     /**
      * Начальная инициализация общая для всех контроллеров. В дочерних - не забывать включать его в BeforeEach
@@ -61,7 +66,7 @@ public abstract class AbstractWebIntegrationTest {
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).defaultResponseCharacterEncoding(StandardCharsets.UTF_8).
                 apply(springSecurity()).build();
-        var testUser = userRepository.findAll().getFirst();
+        testUser = userRepository.findAll().getFirst();
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
     }
 }

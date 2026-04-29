@@ -1,6 +1,8 @@
 package hexlet.code.app;
 
+import hexlet.code.app.model.Task;
 import hexlet.code.app.model.TaskStatus;
+import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,6 +30,12 @@ public final class TaskStatusControllerTests extends AbstractWebIntegrationTest 
      */
     @Autowired
     private TaskStatusRepository taskStatusRepository;
+
+    /**
+     * Репозиторий задач.
+     */
+    @Autowired
+    private TaskRepository taskRepository;
 
     @BeforeEach
     @SqlGroup({
@@ -94,5 +103,24 @@ public final class TaskStatusControllerTests extends AbstractWebIntegrationTest 
                 content(objectMapper.writeValueAsString(duplicateStatus));
 
         mockMvc.perform(request).andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void testCantDeleteStatusWithTask() throws Exception {
+        addTask();
+        TaskStatus toDelete = taskStatusRepository.findAll().getFirst();
+
+        var request = delete("/api/task_statuses/" + toDelete.getId()).with(token);
+        mockMvc.perform(request).andExpect(status().is4xxClientError());
+        assertThat(taskStatusRepository.findById(toDelete.getId())).isPresent();
+    }
+
+    private void addTask() {
+        List<TaskStatus> statuses = taskStatusRepository.findAll();
+        Task task1 = new Task();
+        task1.setName("Задача 1");
+        task1.setDescription("Описание 1");
+        task1.setTaskStatus(statuses.getFirst());
+        taskRepository.save(task1);
     }
 }

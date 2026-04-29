@@ -47,7 +47,8 @@ public final class TaskControllerTests extends AbstractWebIntegrationTest {
 
     @BeforeEach
     @SqlGroup({
-            @Sql(scripts = "/sql/init-statuses.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            @Sql(scripts = "/sql/init-statuses.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+            @Sql(scripts = "/sql/init-labels.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     })
     @Override
     @SuppressWarnings("checkstyle:indentation")

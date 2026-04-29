@@ -1,7 +1,9 @@
 package hexlet.code.app.component;
 
 import hexlet.code.app.dto.UserRequestDto;
+import hexlet.code.app.model.Label;
 import hexlet.code.app.model.TaskStatus;
+import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,11 @@ public final class DataInitializer implements ApplicationRunner {
     private final TaskStatusRepository taskStatusRepository;
 
     /**
+     * Репозиторий меток.
+     */
+    private final LabelRepository labelRepository;
+
+    /**
      * Имя/email администратора.
      */
     @Value("${admin.email:hexlet@example.com}")
@@ -43,6 +50,7 @@ public final class DataInitializer implements ApplicationRunner {
     public void run(final ApplicationArguments args) {
         initAdmin();
         initStatuses();
+        initLabels();
     }
 
     private void initAdmin() {
@@ -82,6 +90,19 @@ public final class DataInitializer implements ApplicationRunner {
                 log.info("Статус '{}' со слагом '{}' успешно создан.", name, slug);
             } else {
                 log.info("Статус со слагом '{}' уже существует.", slug);
+            }
+        }
+    }
+
+    private void initLabels() {
+        final List<String> labelNames = List.of("feature", "bug");
+
+        for (String name : labelNames) {
+            if (labelRepository.findByName(name).isEmpty()) {
+                labelRepository.save(new Label(name));
+                log.info("Метка '{}' создана.", name);
+            } else {
+                log.info("Метка '{}' уже существует.", name);
             }
         }
     }

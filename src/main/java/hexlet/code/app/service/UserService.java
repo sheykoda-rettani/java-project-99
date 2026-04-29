@@ -1,16 +1,18 @@
 package hexlet.code.app.service;
 
+import hexlet.code.app.exception.UnableToDeleteException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.dto.UserRequestDto;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Named;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+import jakarta.validation.Validator;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,8 +62,10 @@ public final class UserService {
             user.setPassword(encodePassword(user.getPassword()));
         }
 
-        Errors errors = new BeanPropertyBindingResult(user, "user");
-        validator.validate(user, errors);
+        var violations = validator.validate(user);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException("Ошибка валидации данных запроса", violations);
+        }
 
         return userRepository.save(user);
     }
@@ -72,12 +76,16 @@ public final class UserService {
 
     public void deleteById(final Long id) {
         findByIdOrThrow(id);
-        userRepository.deleteById(id);
+        try {
+            userRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new UnableToDeleteException("Невозможно удалить пользователя.", e);
+        }
     }
 
     public User findByIdOrThrow(final Long id) {
         return userRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                orElseThrow(() -> new NotFoundException("Пользователь c id %d не найден".formatted(id)));
     }
 
     @Named("userMapping")

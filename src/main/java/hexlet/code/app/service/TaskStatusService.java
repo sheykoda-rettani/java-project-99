@@ -1,16 +1,17 @@
 package hexlet.code.app.service;
 
+import hexlet.code.app.exception.UnableToDeleteException;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.repository.TaskStatusRepository;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Named;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+import jakarta.validation.Validator;
 
 import java.util.List;
 
@@ -54,14 +55,11 @@ public final class TaskStatusService {
             }
             status.setSlug(details.getSlug());
         }
-        Errors errors = new BeanPropertyBindingResult(status, "status");
-        validator.validate(status, errors);
+        var violations = validator.validate(status);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException("Ошибка валидации данных запроса", violations);
+        }
         return taskStatusRepository.save(status);
-    }
-
-    public TaskStatus findBySlugOrThrow(final String slug) {
-        return taskStatusRepository.findBySlug(slug).orElseThrow(() ->
-                new NotFoundException("Статус со слагом '%s' не найден".formatted(slug)));
     }
 
     @Named("statusMapping")
@@ -74,6 +72,10 @@ public final class TaskStatusService {
 
     public void deleteStatus(final Long id) {
         TaskStatus status = findByIdOrThrow(id);
-        taskStatusRepository.delete(status);
+        try {
+            taskStatusRepository.delete(status);
+        } catch (DataIntegrityViolationException e) {
+            throw new UnableToDeleteException("Невозможно удалить статус.", e);
+        }
     }
 }
