@@ -1,13 +1,15 @@
 package hexlet.code.app.service;
 
+import hexlet.code.app.dto.TaskFilterDto;
 import hexlet.code.app.mapper.TaskMapper;
 import hexlet.code.app.dto.TaskDto;
 import hexlet.code.app.model.Task;
 import hexlet.code.app.repository.TaskRepository;
-import hexlet.code.app.repository.UserRepository;
+import hexlet.code.app.specification.TaskSpecification;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import jakarta.validation.Validator;
 
@@ -20,14 +22,7 @@ public final class TaskService {
      * Репозиторий задач.
      */
     private final TaskRepository taskRepository;
-    /**
-     * Сервис пользователей.
-     */
-    private final UserRepository userRepository;
-    /**
-     * Сервис статусов задач.
-     */
-    private final TaskStatusService taskStatusService;
+
     /**
      * Преобразование между DTO и сущностями задач.
      */
@@ -37,8 +32,20 @@ public final class TaskService {
      */
     private final Validator validator;
 
+    /**
+     * Спецификация для поиска.
+     */
+    private final TaskSpecification taskSpecification;
+
     public List<TaskDto> findAll() {
         List<TaskDto> result = taskRepository.findAll().stream().map(taskMapper::toTaskDto).toList();
+        return result;
+    }
+
+    public List<TaskDto> findAll(final TaskFilterDto filter) {
+        Specification<Task> spec = taskSpecification.build(filter);
+        List<Task> resultEntities = taskRepository.findAll(spec);
+        List<TaskDto> result = resultEntities.stream().map(taskMapper::toTaskDto).toList();
         return result;
     }
 

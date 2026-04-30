@@ -8,9 +8,17 @@ spring:
   profiles:
     active: "dev"
 
+springdoc:
+  swagger-ui:
+    path: /api/documentation/docs.html
+  api-docs:
+    path: /api/api-docs
 
 rsa:
   public-key: classpath:certs/public.pem
+
+sentry:
+  enabled: false
 
 admin:
   email: hexlet@example.com

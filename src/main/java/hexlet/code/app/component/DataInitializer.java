@@ -62,9 +62,9 @@ public final class DataInitializer implements ApplicationRunner {
             adminDto.setLastName("Admin");
 
             userService.create(adminDto);
-            log.info("Администратор c email '{}' успешно создан.", adminEmail);
+            log.info("Administrator with email '{}' created successfully.", adminEmail);
         } else {
-            log.info("Администратор уже существует.");
+            log.info("Administrator with email '{}' already exists.", adminEmail);
         }
     }
 
@@ -87,9 +87,9 @@ public final class DataInitializer implements ApplicationRunner {
                 newStatus.setSlug(slug);
                 taskStatusRepository.save(newStatus);
 
-                log.info("Статус '{}' со слагом '{}' успешно создан.", name, slug);
+                log.info("Status '{}' with slug '{}' created successfully.", name, slug);
             } else {
-                log.info("Статус со слагом '{}' уже существует.", slug);
+                log.info("Status '{}' with slug '{}' already exists.", name, slug);
             }
         }
     }
@@ -100,9 +100,9 @@ public final class DataInitializer implements ApplicationRunner {
         for (String name : labelNames) {
             if (labelRepository.findByName(name).isEmpty()) {
                 labelRepository.save(new Label(name));
-                log.info("Метка '{}' создана.", name);
+                log.info("Label '{}' created.", name);
             } else {
-                log.info("Метка '{}' уже существует.", name);
+                log.info("Label '{}' already exists.", name);
             }
         }
     }

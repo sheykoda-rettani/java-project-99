@@ -8,6 +8,7 @@ plugins {
     id("org.sonarqube") version "7.2.3.7755"
 
     id("io.freefair.lombok") version "9.2.0"
+    id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
 }
 
 group = "hexlet.code"
@@ -21,6 +22,11 @@ java {
 
 repositories {
 	mavenCentral()
+}
+
+openApi {
+    apiDocsUrl.set("http://localhost:8080/api/api-docs")
+    waitTimeInSeconds.set(10)
 }
 
 dependencies {
@@ -50,6 +56,9 @@ dependencies {
 
     implementation("org.mapstruct:mapstruct:1.6.3")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.0.2")
 }
 
 tasks.jacocoTestReport {

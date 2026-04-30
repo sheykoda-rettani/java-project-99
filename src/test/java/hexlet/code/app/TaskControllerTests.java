@@ -108,6 +108,20 @@ public final class TaskControllerTests extends AbstractWebIntegrationTest {
         assertThat(actual).isEqualTo(task);
     }
 
+    @Test
+    public void testFilterWorks() throws Exception {
+        String statusSlug = taskStatusRepository.findAll().getLast().getSlug();
+        String filter = "?titleCont=Зад&status=" + statusSlug;
+        final int expectedSize = 1;
+        var request = get("/api/tasks" + filter).with(token);
+        var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
+        var body = result.getResponse().getContentAsString();
+        List<TaskDto> actual = objectMapper.readValue(body, new TypeReference<>() { });
+        assertThat(actual.size()).isEqualTo(expectedSize);
+        TaskDto dto = actual.getFirst();
+        assertThat(dto.getStatus()).isEqualTo(statusSlug);
+    }
+
     private void initDb() {
         taskRepository.deleteAll();
         final int index1 = 1;
