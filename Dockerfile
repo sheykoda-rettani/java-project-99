@@ -16,10 +16,10 @@ ENV PATH=$PATH:$GRADLE_HOME/bin
 COPY build.gradle.kts .
 COPY settings.gradle.kts .
 
-RUN ./gradlew --no-daemon dependencies
+RUN gradle --no-daemon dependencies
 COPY src src
 
-RUN ./gradlew --no-daemon build
+RUN gradle --no-daemon build
 
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=60.0 -XX:InitialRAMPercentage=50.0"
 EXPOSE 8080
