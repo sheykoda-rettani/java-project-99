@@ -20,6 +20,13 @@ java {
 	}
 }
 
+sonar {
+    properties {
+        property("sonar.projectKey", "sheykoda-rettani_java-project-99")
+        property("sonar.organization", "sheykoda-rettani")
+    }
+}
+
 repositories {
 	mavenCentral()
 }
