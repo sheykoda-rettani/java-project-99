@@ -106,7 +106,7 @@ public final class UserService {
 
     private String encodePassword(final String password) {
         if (password == null || password.isBlank()) {
-            throw new RuntimeException("пароль не может быть пустым");
+            return null;
         }
         return passwordEncoder.encode(password);
     }

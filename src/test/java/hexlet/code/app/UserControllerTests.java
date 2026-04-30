@@ -41,6 +41,7 @@ public final class UserControllerTests extends AbstractWebIntegrationTest {
     private TaskRepository taskRepository;
 
     @BeforeEach
+    @Override
     @SuppressWarnings("checkstyle:indentation")
     void setUp() {
         super.setUp();
