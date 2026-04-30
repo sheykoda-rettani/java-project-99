@@ -16,8 +16,8 @@ ENV PATH=$PATH:$GRADLE_HOME/bin
 COPY build.gradle.kts .
 COPY settings.gradle.kts .
 COPY config config
-COPY package.json
-COPY package-lock.json
+COPY package.json .
+COPY package-lock.json .
 
 RUN gradle --no-daemon dependencies
 COPY src src
