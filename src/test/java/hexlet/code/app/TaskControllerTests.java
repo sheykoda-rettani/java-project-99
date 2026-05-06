@@ -5,6 +5,7 @@ import hexlet.code.app.mapper.TaskMapper;
 import hexlet.code.app.model.Task;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import org.assertj.core.api.Assertions;
@@ -17,6 +18,7 @@ import org.springframework.test.context.jdbc.SqlGroup;
 import tools.jackson.core.type.TypeReference;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -43,6 +45,12 @@ public final class TaskControllerTests extends AbstractWebIntegrationTest {
      */
     @Autowired
     private TaskMapper mapper;
+
+    /**
+     * Репозиторий меток.
+     */
+    @Autowired
+    private LabelRepository labelRepository;
 
     @BeforeEach
     @SqlGroup({
@@ -125,8 +133,10 @@ public final class TaskControllerTests extends AbstractWebIntegrationTest {
 
     @Test
     public void testFilterWorks() throws Exception {
-        String statusSlug = taskStatusRepository.findAll().getLast().getSlug();
-        String filter = "?titleCont=Зад&status=" + statusSlug;
+        String statusSlug = taskStatusRepository.findAll().getFirst().getSlug();
+        Long assigneeId = userRepository.findAll().getFirst().getId();
+        Long labelId = labelRepository.findAll().getFirst().getId();
+        String filter = "?titleCont=Зад&status=%s&assigneeId=%d&labelId=%d".formatted(statusSlug, assigneeId, labelId);
         final int expectedSize = 1;
         var request = get("/api/tasks" + filter).with(token);
         var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
@@ -150,6 +160,9 @@ public final class TaskControllerTests extends AbstractWebIntegrationTest {
         task1.setDescription("Описание 1");
         task1.setAssignee(assignee);
         task1.setTaskStatus(statuses.getFirst());
+        taskRepository.save(task1);
+
+        task1.setLabels(Set.of(labelRepository.findAll().getFirst()));
         taskRepository.save(task1);
 
         Task task2 = new Task();

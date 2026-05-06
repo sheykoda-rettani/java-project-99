@@ -37,11 +37,6 @@ public final class TaskService {
      */
     private final TaskSpecification taskSpecification;
 
-    public List<TaskDto> findAll() {
-        List<TaskDto> result = taskRepository.findAll().stream().map(taskMapper::toTaskDto).toList();
-        return result;
-    }
-
     public List<TaskDto> findAll(final TaskFilterDto filter) {
         Specification<Task> spec = taskSpecification.build(filter);
         List<Task> resultEntities = taskRepository.findAll(spec);
