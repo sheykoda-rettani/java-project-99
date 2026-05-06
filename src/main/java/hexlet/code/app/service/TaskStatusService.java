@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import jakarta.validation.Validator;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,8 +51,12 @@ public final class TaskStatusService {
             status.setName(details.getName());
         }
         if (details.getSlug() != null) {
-            if (taskStatusRepository.findBySlug(details.getSlug()).isPresent()) {
-                throw new DuplicateKeyException("Статус со слагом '%s' уже существует".formatted(details.getSlug()));
+            Optional<TaskStatus> candidate = taskStatusRepository.findBySlug(details.getSlug());
+            if (candidate.isPresent()) {
+                if (!candidate.get().getId().equals(id)) {
+                    throw new DuplicateKeyException("Статус со слагом '%s' уже существует".
+                            formatted(details.getSlug()));
+                }
             }
             status.setSlug(details.getSlug());
         }

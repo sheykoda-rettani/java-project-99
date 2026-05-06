@@ -124,6 +124,14 @@ public final class LabelControllerTests extends AbstractWebIntegrationTest {
         assertThat(labelRepository.findById(label.getId())).isPresent();
     }
 
+    @Test
+    public void testDeleteSuccessfully() throws Exception {
+        Label label = labelRepository.findAll().getLast();
+        var request = delete("/api/labels/" + label.getId()).with(token);
+        mockMvc.perform(request).andExpect(status().isOk());
+        assertThat(labelRepository.findById(label.getId())).isNotPresent();
+    }
+
     private void initDb() {
         taskRepository.deleteAll();
         final int index1 = 1;

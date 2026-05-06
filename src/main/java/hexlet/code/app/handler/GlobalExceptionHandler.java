@@ -83,5 +83,4 @@ public final class GlobalExceptionHandler {
         result.setMessage(error.getDefaultMessage());
         return result;
     }
-
 }

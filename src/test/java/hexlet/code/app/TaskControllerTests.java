@@ -23,6 +23,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -106,6 +107,22 @@ public final class TaskControllerTests extends AbstractWebIntegrationTest {
         TaskDto dto = objectMapper.readValue(body, TaskDto.class);
         Task actual = mapper.toTaskEntity(dto);
         assertThat(actual).isEqualTo(task);
+    }
+
+    @Test
+    public void testUpdate() throws Exception {
+        final String expectedContent = "Измененное описание";
+        var task = taskRepository.findAll().getFirst();
+        TaskDto taskDto = new TaskDto();
+        taskDto.setContent(expectedContent);
+        var request = put("/api/tasks/" + task.getId()).
+                with(token).
+                contentType(MediaType.APPLICATION_JSON).
+                content(objectMapper.writeValueAsString(taskDto));
+        mockMvc.perform(request).andExpect(status().isOk());
+        var actualTask = taskRepository.findById(task.getId()).orElse(null);
+        assertNotNull(actualTask);
+        assertThat(actualTask.getDescription()).isEqualTo(expectedContent);
     }
 
     @Test

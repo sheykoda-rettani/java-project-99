@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
@@ -21,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -103,6 +106,42 @@ public final class TaskStatusControllerTests extends AbstractWebIntegrationTest 
                 content(objectMapper.writeValueAsString(duplicateStatus));
 
         mockMvc.perform(request).andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void testUpdateSuccess() throws Exception {
+        String updatedName = "Новое название";
+        var statusToUpdate = taskStatusRepository.findAll().getFirst();
+        TaskStatus updateDetails = new TaskStatus();
+        updateDetails.setName(updatedName);
+
+        var request = put("/api/task_statuses/" + statusToUpdate.getId()).
+                with(token).
+                contentType(MediaType.APPLICATION_JSON).
+                content(objectMapper.writeValueAsString(updateDetails));
+
+        mockMvc.perform(request).andExpect(status().isOk());
+        var actualStatus = taskStatusRepository.findById(statusToUpdate.getId()).orElse(null);
+        assertNotNull(actualStatus);
+        assertThat(actualStatus.getName()).isEqualTo(updatedName);
+    }
+
+    @Test
+    public void testCantUpdateToExistingSlug() throws Exception {
+        HttpStatus expectedCode = HttpStatus.CONFLICT;
+        String duplicateSlug = taskStatusRepository.findAll().getFirst().getSlug();
+        Long secondStatusId = taskStatusRepository.findAll().getLast().getId();
+        TaskStatus updateDetails = new TaskStatus();
+        updateDetails.setSlug(duplicateSlug);
+
+        var request = put("/api/task_statuses/" + secondStatusId).
+                with(token).
+                contentType(MediaType.APPLICATION_JSON).
+                content(objectMapper.writeValueAsString(updateDetails));
+
+        mockMvc.perform(request).
+                andExpect(status().is4xxClientError()).
+                andExpect(jsonPath("$.code").value(expectedCode.value()));
     }
 
     @Test
