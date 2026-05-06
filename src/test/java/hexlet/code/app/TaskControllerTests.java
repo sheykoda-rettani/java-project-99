@@ -2,6 +2,7 @@ package hexlet.code.app;
 
 import hexlet.code.app.dto.TaskDto;
 import hexlet.code.app.mapper.TaskMapper;
+import hexlet.code.app.model.Label;
 import hexlet.code.app.model.Task;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
@@ -54,8 +55,7 @@ public final class TaskControllerTests extends AbstractWebIntegrationTest {
 
     @BeforeEach
     @SqlGroup({
-            @Sql(scripts = "/sql/init-statuses.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-            @Sql(scripts = "/sql/init-labels.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            @Sql(scripts = "/sql/init-statuses.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     })
     @Override
     @SuppressWarnings("checkstyle:indentation")
@@ -133,10 +133,12 @@ public final class TaskControllerTests extends AbstractWebIntegrationTest {
 
     @Test
     public void testFilterWorks() throws Exception {
+        String labelName = "Some new label";
+        addLabelToTask(labelName);
         String statusSlug = taskStatusRepository.findAll().getFirst().getSlug();
         Long assigneeId = userRepository.findAll().getFirst().getId();
-        Long labelId = labelRepository.findAll().getFirst().getId();
-        String filter = "?titleCont=Зад&status=%s&assigneeId=%d&labelId=%d".formatted(statusSlug, assigneeId, labelId);
+        Long labelId = labelRepository.findByName(labelName).get().getId();
+        String filter = "?titleCont=Зад&status=%s&assigneeId=%d".formatted(statusSlug, assigneeId, labelId);
         final int expectedSize = 1;
         var request = get("/api/tasks" + filter).with(token);
         var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
@@ -145,6 +147,17 @@ public final class TaskControllerTests extends AbstractWebIntegrationTest {
         assertThat(actual.size()).isEqualTo(expectedSize);
         TaskDto dto = actual.getFirst();
         assertThat(dto.getStatus()).isEqualTo(statusSlug);
+    }
+
+    private void addLabelToTask(final String labelName) {
+
+        labelRepository.deleteAll();
+        Label toAdd = new Label();
+        toAdd.setName(labelName);
+        labelRepository.save(toAdd);
+        Task task = taskRepository.findAll().getFirst();
+        task.setLabels(Set.of(toAdd));
+        taskRepository.save(task);
     }
 
     private void initDb() {
@@ -160,9 +173,6 @@ public final class TaskControllerTests extends AbstractWebIntegrationTest {
         task1.setDescription("Описание 1");
         task1.setAssignee(assignee);
         task1.setTaskStatus(statuses.getFirst());
-        taskRepository.save(task1);
-
-        task1.setLabels(Set.of(labelRepository.findAll().getFirst()));
         taskRepository.save(task1);
 
         Task task2 = new Task();
