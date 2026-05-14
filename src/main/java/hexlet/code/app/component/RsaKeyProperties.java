@@ -7,7 +7,11 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
@@ -31,15 +35,29 @@ public final class RsaKeyProperties {
      */
     private RSAPrivateKey privateKey;
     /**
+     * Путь к приватному ключу.
+     */
+    private String privateKeyPath;
+    /**
      * Переменные окружения.
      */
     private final Environment env;
 
+    /**
+     * Инициализация приватного ключа. В первую очередь пытается получить ключ из переменной RSA_PRIVATE_KEY_PROD.
+     * @throws NoSuchAlgorithmException если не доступен криптоалгоритм
+     * @throws InvalidKeySpecException если есть ошибку в спецификации ключа
+     * @throws IOException если есть ошибка при попытке получить ключ из файла.
+     */
     @PostConstruct
-    public void init() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private void loadPrivateKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         String privateKeyEnv = env.getProperty("RSA_PRIVATE_KEY_PROD");
-        if (privateKeyEnv != null && !privateKeyEnv.isEmpty()) {
+        if (privateKeyEnv != null && !privateKeyEnv.isBlank()) {
             privateKey = getPrivateKeyFromString(privateKeyEnv);
+        } else if (privateKeyPath != null && !privateKeyPath.isBlank()) {
+            File file = ResourceUtils.getFile(privateKeyPath);
+            String content = Files.readString(file.toPath());
+            privateKey = getPrivateKeyFromString(content);
         }
     }
 

@@ -14,6 +14,7 @@ springdoc:
 
 rsa:
   public-key: classpath:certs/public.pem
+  private-key-path: classpath:certs/private.pem
 
 sentry:
   enabled: false
