@@ -1,3 +1,5 @@
+# syntax = docker/dockerfile:1.2
+
 FROM eclipse-temurin:21-jdk
 ARG GRADLE_VERSION=9.4.1
 
@@ -19,8 +21,18 @@ COPY config config
 COPY package.json .
 COPY package-lock.json .
 
-RUN gradle --no-daemon dependencies
 COPY src src
+
+RUN --mount=type=secret,id=rsa_private_key_prod,dst=/etc/secrets/rsa_private_key_prod \
+    gradle --no-daemon build -x test && \
+    if [ -f "/etc/secrets/rsa_private_key_prod" ]; then \
+        echo "--- DOCKER BUILD LOG ---"; \
+        echo "Секретный файл найден в контейнере сборки."; \
+        cp /etc/secrets/rsa_private_key_prod /app/src/main/resources/certs/private.pem; \
+    else \
+        echo "--- DOCKER BUILD LOG ---"; \
+        echo "ОШИБКА: Секретный файл НЕ найден. Сборка продолжится, но ключ не будет встроен."; \
+    fi
 
 RUN gradle --no-daemon build -x test
 
