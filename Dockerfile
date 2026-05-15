@@ -27,7 +27,7 @@ COPY src src
 #COPY /etc/secrets/RSA_PRIVATE_KEY_PROD /src/main/resources/certs/private.pem
 
 RUN --mount=type=secret,id=RSA_PRIVATE_KEY_PROD,dst=/etc/secrets/RSA_PRIVATE_KEY_PROD \
-    cat /etc/secrets/RSA_PRIVATE_KEY_PROD
+    cat /etc/secrets/RSA_PRIVATE_KEY_PROD \
     && gradle --no-daemon build -x test
 #RUN gradle --no-daemon build -x test
 
