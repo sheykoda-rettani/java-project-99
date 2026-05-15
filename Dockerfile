@@ -25,13 +25,11 @@ COPY src src
 #RUN mkdir -p /src/main/resources/certs
 
 #COPY /etc/secrets/RSA_PRIVATE_KEY_PROD /src/main/resources/certs/private.pem
-
+    #cat /etc/secrets/RSA_PRIVATE_KEY_PROD
 RUN --mount=type=secret,id=RSA_PRIVATE_KEY_PROD,dst=/etc/secrets/RSA_PRIVATE_KEY_PROD \
-    cat /etc/secrets/RSA_PRIVATE_KEY_PROD \
-    && gradle --no-daemon build -x test
+    gradle --no-daemon build -x test
 #RUN gradle --no-daemon build -x test
 
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=60.0 -XX:InitialRAMPercentage=50.0"
 EXPOSE 8080
 
 CMD java -jar build/libs/app-0.0.1-SNAPSHOT.jar

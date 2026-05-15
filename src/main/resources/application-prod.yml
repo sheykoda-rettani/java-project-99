@@ -4,3 +4,6 @@ spring:
     driverClassName: org.postgresql.Driver
     username: ${DB_USERNAME:user}
     password: ${DB_PASSWORD:password}
+
+rsa:
+  private-key-path: /etc/secrets/RSA_PRIVATE_KEY_PROD
