@@ -26,10 +26,10 @@ COPY src src
 
 #COPY /etc/secrets/RSA_PRIVATE_KEY_PROD /src/main/resources/certs/private.pem
 
-RUN --mount=type=secret,id=RSA_PRIVATE_KEY_PROD,dst=/etc/secrets/RSA_PRIVATE_KEY_PROD \
+RUN --mount=type=secret,id=RSA_PRIVATE_KEY_PROD,dst=/etc/secrets/RSA_PRIVATE_KEY_PROD,env=RSA_PRIVATE_KEY_PROD \
     cp /etc/secrets/RSA_PRIVATE_KEY_PROD /src/main/resources/certs/private.pem
-
-RUN gradle --no-daemon build -x test
+    && gradle --no-daemon build -x test
+#RUN gradle --no-daemon build -x test
 
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=60.0 -XX:InitialRAMPercentage=50.0"
 EXPOSE 8080
