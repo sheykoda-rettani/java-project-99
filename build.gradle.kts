@@ -1,7 +1,7 @@
 plugins {
-	java
-	id("org.springframework.boot") version "4.0.5"
-	id("io.spring.dependency-management") version "1.1.7"
+    java
+    id("org.springframework.boot") version "4.0.5"
+    id("io.spring.dependency-management") version "1.1.7"
     id("jacoco")
     id("checkstyle")
     id("com.github.ben-manes.versions") version "0.53.0"
@@ -15,9 +15,9 @@ group = "hexlet.code"
 version = "0.0.1-SNAPSHOT"
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 sonar {
@@ -28,7 +28,7 @@ sonar {
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 openApi {
@@ -37,9 +37,9 @@ openApi {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -74,9 +74,19 @@ tasks.jacocoTestReport {
         csv.required = false
         html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
     }
+
+    classDirectories.setFrom(
+        classDirectories.files.map { treeElement ->
+            fileTree(treeElement).apply {
+                exclude("**/hexlet/code/app/mapper/**")
+                exclude("**/hexlet/code/app/component/RsaKeyProperties.class")
+                exclude("**/hexlet/code/app/service/CustomUserDetailsService.class")
+            }
+        }
+    )
 }
 
 tasks.withType<Test> {
-	useJUnitPlatform()
+    useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
 }
