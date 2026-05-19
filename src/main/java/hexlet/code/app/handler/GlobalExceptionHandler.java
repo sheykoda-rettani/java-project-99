@@ -6,9 +6,11 @@ import hexlet.code.app.exception.UnableToDeleteException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.NotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -61,6 +63,36 @@ public final class GlobalExceptionHandler {
         ErrorResponseDto responseDto = new ErrorResponseDto(status,
                 ex.getMessage(),
                 ex.getCause().getMessage());
+        return new ResponseEntity<>(responseDto, status);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolationsInDb(
+            final DataIntegrityViolationException ex) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        String messageForUser = "Произошла ошибка при попытке изменить БД.";
+        ErrorResponseDto responseDto = new ErrorResponseDto(status, messageForUser, ex.getMessage());
+        return new ResponseEntity<>(responseDto, status);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthorizationException(final AuthorizationDeniedException ex) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+
+        String messageForUser = "У вас нет прав на выполнение данной операции.";
+        ErrorResponseDto responseDto = new ErrorResponseDto(status, messageForUser, ex.getMessage());
+
+        return new ResponseEntity<>(responseDto, status);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleAllOtherExceptions(final Exception ex) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        String messageForUser = "Произошла непредвиденная ошибка на сервере.";
+        ErrorResponseDto responseDto = new ErrorResponseDto(status, messageForUser, ex.getMessage());
+
         return new ResponseEntity<>(responseDto, status);
     }
 

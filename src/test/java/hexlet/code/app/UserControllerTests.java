@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import tools.jackson.core.type.TypeReference;
 
@@ -136,22 +137,29 @@ public final class UserControllerTests extends AbstractWebIntegrationTest {
 
     @Test
     public void testCantDeleteUserWithTask() throws Exception {
+        List<TaskStatus> statuses = taskStatusRepository.findAll();
+        Task task1 = new Task();
+        task1.setName("Задача 1");
+        task1.setDescription("Описание 1");
+        task1.setTaskStatus(statuses.getFirst());
+        task1.setAssignee(testUser);
+        taskRepository.save(task1);
+
+        var request = delete("/api/users/" + testUser.getId()).with(token);
+        mockMvc.perform(request).andExpect(status().is4xxClientError());
+        assertThat(userRepository.findById(testUser.getId())).isPresent();
+    }
+
+    @Test
+    public void testCantDeleteOtherUser() throws Exception {
         User toDelete = new User();
         toDelete.setEmail("delete@mail.com");
         toDelete.setPassword("superSecret");
         toDelete.setFirstName("Удаль");
         toDelete.setLastName("Удали");
         userRepository.save(toDelete);
-        List<TaskStatus> statuses = taskStatusRepository.findAll();
-        Task task1 = new Task();
-        task1.setName("Задача 1");
-        task1.setDescription("Описание 1");
-        task1.setTaskStatus(statuses.getFirst());
-        task1.setAssignee(toDelete);
-        taskRepository.save(task1);
-
         var request = delete("/api/users/" + toDelete.getId()).with(token);
-        mockMvc.perform(request).andExpect(status().is4xxClientError());
+        mockMvc.perform(request).andExpect(status().is(HttpStatus.FORBIDDEN.value()));
         assertThat(userRepository.findById(toDelete.getId())).isPresent();
     }
 }

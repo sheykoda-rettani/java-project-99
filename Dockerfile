@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.2
 FROM eclipse-temurin:21-jdk
-ARG GRADLE_VERSION=9.4.1
+ARG GRADLE_VERSION=9.5.0
 
 RUN apt-get update && apt-get install -yq make unzip
 
