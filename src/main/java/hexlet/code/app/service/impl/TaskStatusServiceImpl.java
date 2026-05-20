@@ -10,12 +10,10 @@ import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Named;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import jakarta.validation.Validator;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,9 +40,6 @@ public final class TaskStatusServiceImpl implements TaskStatusService {
 
     @Override
     public TaskStatus create(@Valid final TaskStatus taskStatus) {
-        if (taskStatusRepository.findBySlug(taskStatus.getSlug()).isPresent()) {
-            throw new DuplicateKeyException("Статус со слагом '%s' уже существует".formatted(taskStatus.getSlug()));
-        }
         return taskStatusRepository.save(taskStatus);
     }
 
@@ -56,13 +51,6 @@ public final class TaskStatusServiceImpl implements TaskStatusService {
             status.setName(details.getName());
         }
         if (details.getSlug() != null) {
-            Optional<TaskStatus> candidate = taskStatusRepository.findBySlug(details.getSlug());
-            if (candidate.isPresent()) {
-                if (!candidate.get().getId().equals(id)) {
-                    throw new DuplicateKeyException("Статус со слагом '%s' уже существует".
-                            formatted(details.getSlug()));
-                }
-            }
             status.setSlug(details.getSlug());
         }
         var violations = validator.validate(status);

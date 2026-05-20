@@ -69,7 +69,7 @@ public final class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolationsInDb(
             final DataIntegrityViolationException ex) {
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        HttpStatus status = HttpStatus.CONFLICT;
 
         String messageForUser = "Произошла ошибка при попытке изменить БД.";
         ErrorResponseDto responseDto = new ErrorResponseDto(status, messageForUser, ex.getMessage());
