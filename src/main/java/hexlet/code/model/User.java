@@ -1,0 +1,130 @@
+package hexlet.code.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+@EqualsAndHashCode
+public final class User implements UserDetails {
+    /**
+     * ID поле.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    /**
+     * Имя пользователя.
+     */
+    @Size(min = 2, message = "Имя должно содержать минимум 2 символа")
+    @Column(nullable = false)
+    private String firstName;
+
+    /**
+     * Фамилия пользователя.
+     */
+    @Size(min = 2, message = "Имя должно содержать минимум 2 символа")
+    @Column(nullable = false)
+    private String lastName;
+
+    /**
+     * Адрес электронной почты.
+     */
+    @Email(message = "Неверный формат email")
+    @NotBlank(message = "Email обязателен")
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    /**
+     * Пароль.
+     */
+    @NotBlank(message = "Пароль обязателен")
+    @Size(min = 3, message = "Пароль должен содержать минимум 3 символа")
+    @JsonIgnore
+    @Column(nullable = false)
+    @EqualsAndHashCode.Exclude
+    private String password;
+
+    /**
+     * Время создания записи.
+     */
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @EqualsAndHashCode.Exclude
+    private LocalDateTime createdAt;
+
+    /**
+     * Время изменения записи.
+     */
+    @Column(name = "updated_at", nullable = false)
+    @EqualsAndHashCode.Exclude
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    private void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    @JsonIgnore
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
+    }
+}
