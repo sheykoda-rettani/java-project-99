@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
@@ -126,7 +127,7 @@ public final class LabelControllerTests extends AbstractWebIntegrationTest {
     public void testDeleteSuccessfully() throws Exception {
         Label label = labelRepository.findAll().getLast();
         var request = delete("/api/labels/" + label.getId()).with(token);
-        mockMvc.perform(request).andExpect(status().isOk());
+        mockMvc.perform(request).andExpect(status().is(HttpStatus.NO_CONTENT.value()));
         assertThat(labelRepository.findById(label.getId())).isNotPresent();
     }
 
