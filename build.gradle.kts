@@ -69,12 +69,6 @@ dependencies {
 }
 
 tasks.jacocoTestReport {
-    reports {
-        xml.required = true
-        csv.required = false
-        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
-    }
-
     classDirectories.setFrom(
         classDirectories.files.map { treeElement ->
             fileTree(treeElement).apply {
@@ -84,6 +78,12 @@ tasks.jacocoTestReport {
             }
         }
     )
+
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
 }
 
 tasks.withType<Test> {
