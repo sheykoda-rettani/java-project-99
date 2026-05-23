@@ -55,4 +55,11 @@ public interface TaskMapper {
         }
         return label.getName();
     }
+    
+    default Long mapLabelToLong(Label label) {
+        if (label == null) {
+            return null;
+        }
+        return label.getId();
+    }
 }

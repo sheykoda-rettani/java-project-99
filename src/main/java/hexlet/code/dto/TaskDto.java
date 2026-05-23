@@ -49,7 +49,12 @@ public class TaskDto {
     private String status;
 
     /**
-     * Список меток задачи.
+     * Список наименований меток задачи.
      */
     private Set<String> labels;
+    
+    /**
+     * Список id меток задачи.
+     */
+    private Set<Long> taskLabelIds;
 }
