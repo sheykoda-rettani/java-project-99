@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
@@ -35,7 +35,7 @@ public class TaskDto {
     /**
      * Дата создания задачи.
      */
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     /**
      * Id пользователя, на которого назначена задача.

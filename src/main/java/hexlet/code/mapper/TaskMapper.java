@@ -25,6 +25,7 @@ public interface TaskMapper {
     @Mapping(target = "description", source = "content")
     @Mapping(target = "assignee", source = "assigneeId", qualifiedByName = "userMapping")
     @Mapping(target = "taskStatus", source = "status", qualifiedByName = "statusMapping")
+    @Mapping(target = "labels", source = "taskLabelIds")
     Task toTaskEntity(TaskDto dto);
 
     @Mapping(target = "id", ignore = true)
@@ -33,12 +34,14 @@ public interface TaskMapper {
     @Mapping(target = "description", source = "content")
     @Mapping(target = "assignee", source = "assigneeId", qualifiedByName = "userMapping")
     @Mapping(target = "taskStatus", source = "status", qualifiedByName = "statusMapping")
+    @Mapping(target = "labels", source = "taskLabelIds")
     Task toNewTaskEntity(TaskDto dto);
 
     @Mapping(target = "assigneeId", source = "assignee.id")
     @Mapping(target = "status", source = "taskStatus.slug")
     @Mapping(target = "content", source = "description")
     @Mapping(target = "title", source = "name")
+    @Mapping(target = "taskLabelIds", source = "labels")
     TaskDto toTaskDto(Task task);
 
     @Mapping(target = "id", ignore = true)
@@ -47,6 +50,7 @@ public interface TaskMapper {
     @Mapping(target = "description", source = "content")
     @Mapping(target = "assignee", source = "assigneeId", qualifiedByName = "userMapping")
     @Mapping(target = "taskStatus", source = "status", qualifiedByName = "statusMapping")
+    @Mapping(target = "labels", source = "taskLabelIds")
     void updateFromDto(TaskDto dto, @MappingTarget Task task);
 
     default String mapLabelToString(Label label) {
