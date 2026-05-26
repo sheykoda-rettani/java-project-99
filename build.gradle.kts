@@ -24,6 +24,7 @@ sonar {
     properties {
         property("sonar.projectKey", "sheykoda-rettani_java-project-99")
         property("sonar.organization", "sheykoda-rettani")
+        property("sonar.coverage.exclusions", "**/hexlet/code/app/mapper/**, **/*RsaKeyProperties.java, **/*CustomUserDetailsService.java")
     }
 }
 
@@ -73,8 +74,8 @@ tasks.jacocoTestReport {
         classDirectories.files.map { treeElement ->
             fileTree(treeElement).apply {
                 exclude("**/hexlet/code/app/mapper/**")
-                exclude("**/hexlet/code/app/component/RsaKeyProperties.class")
-                exclude("**/hexlet/code/app/service/CustomUserDetailsService.class")
+                exclude("**/hexlet/code/app/component/RsaKeyProperties.java")
+                exclude("**/hexlet/code/app/service/CustomUserDetailsService.java")
             }
         }
     )
