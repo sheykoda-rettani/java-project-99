@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.2
-FROM eclipse-temurin:25-jdk
-ARG GRADLE_VERSION=9.5.1
+FROM eclipse-temurin:21-jdk
+ARG GRADLE_VERSION=9.4.1
 
 RUN apt-get update && apt-get install -yq make unzip
 
@@ -22,13 +22,9 @@ COPY package-lock.json .
 
 COPY src src
 
-#RUN mkdir -p /src/main/resources/certs
 
-#COPY /etc/secrets/RSA_PRIVATE_KEY_PROD /src/main/resources/certs/private.pem
-    #cat /etc/secrets/RSA_PRIVATE_KEY_PROD
 RUN --mount=type=secret,id=RSA_PRIVATE_KEY_PROD,dst=/etc/secrets/RSA_PRIVATE_KEY_PROD \
     gradle --no-daemon build -x test
-#RUN gradle --no-daemon build -x test
 
 EXPOSE 8080
 
