@@ -2,7 +2,11 @@
 FROM eclipse-temurin:25
 ARG GRADLE_VERSION=9.4.1
 
-RUN apt-get update && apt-get install -yq make unzip
+RUN apt-get update && apt-get install -yq --no-install-recommends \
+        make \
+        unzip \
+        wget \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
     && unzip gradle-${GRADLE_VERSION}-bin.zip \
